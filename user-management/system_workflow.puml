@@ -1,0 +1,122 @@
+@startuml RESTful User Management System Workflow
+
+skinparam backgroundColor white
+skinparam handwritten false
+
+' 参与者定义
+actor "Client" as client
+participant "UserController\n(Controller Layer)" as controller #lightblue
+participant "UserService\n(Service Layer)" as service #lightgreen
+participant "UserRepository\n(Repository Layer)" as repository #lightyellow
+database "H2 Database\n(Data Layer)" as database #lightgray
+
+' 请求流程
+== User CRUD Operations ==
+
+' 创建用户流程
+group Create User
+    client -> controller : POST /api/users
+    activate controller
+    note right: JSON Request Body
+    
+    controller -> service : createUser(UserDTO)
+    activate service
+    
+    service -> repository : save(User)
+    activate repository
+    
+    repository -> database : INSERT INTO users
+    activate database
+    database --> repository : Return user data
+    deactivate database
+    
+    repository --> service : Return User entity
+    deactivate repository
+    
+    service --> controller : Return created User
+    deactivate service
+    
+    controller --> client : HTTP 200 OK with User JSON
+    deactivate controller
+end
+
+' 查询用户流程
+group Get User
+    client -> controller : GET /api/users/{id}
+    activate controller
+    
+    controller -> service : getUserById(id)
+    activate service
+    
+    service -> repository : findById(id)
+    activate repository
+    
+    repository -> database : SELECT FROM users
+    activate database
+    database --> repository : Return user data
+    deactivate database
+    
+    repository --> service : Return Optional<User>
+    deactivate repository
+    
+    service --> controller : Return User
+    deactivate service
+    
+    controller --> client : HTTP 200 OK with User JSON
+    deactivate controller
+end
+
+' 更新用户流程
+group Update User
+    client -> controller : PUT /api/users/{id}
+    activate controller
+    note right: JSON Request Body
+    
+    controller -> service : updateUser(id, UserDTO)
+    activate service
+    
+    service -> repository : findById(id) + save(User)
+    activate repository
+    
+    repository -> database : UPDATE users
+    activate database
+    database --> repository : Return updated data
+    deactivate database
+    
+    repository --> service : Return updated User
+    deactivate repository
+    
+    service --> controller : Return updated User
+    deactivate service
+    
+    controller --> client : HTTP 200 OK with User JSON
+    deactivate controller
+end
+
+' 删除用户流程
+group Delete User
+    client -> controller : DELETE /api/users/{id}
+    activate controller
+    
+    controller -> service : deleteUser(id)
+    activate service
+    
+    service -> repository : deleteById(id)
+    activate repository
+    
+    repository -> database : DELETE FROM users
+    activate database
+    database --> repository : Confirm deletion
+    deactivate database
+    
+    repository --> service : Return void
+    deactivate repository
+    
+    service --> controller : Return void
+    deactivate service
+    
+    controller --> client : HTTP 200 OK
+    deactivate controller
+end
+
+@enduml

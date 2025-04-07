@@ -9,10 +9,10 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>user-management</artifactId>
+	<artifactId>yanami-restaurant</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>user-management</name>
-	<description>User Management System with RESTful API</description>
+	<name>yanami-restaurant</name>
+	<description>Restaurant Management System for Yanami's Restaurant in Toyohashi</description>
 	<url/>
 	<licenses>
 		<license/>
